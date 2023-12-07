@@ -1,0 +1,28 @@
+version: '1.0'
+name: pipeline-20231207
+displayName: pipeline-20231207
+triggers:
+  trigger: auto
+  push:
+    branches:
+      prefix:
+        - ''
+stages:
+  - name: stage-eb3ec357
+    displayName: 通知主机
+    strategy: naturally
+    trigger: auto
+    executor: []
+    steps:
+      - step: shell@agent
+        name: execute_shell
+        displayName: Shell 脚本执行
+        hostGroupID:
+          ID: 阿里云
+          hostID:
+            - 02e610ed-3e7e-4480-ad6a-2c82895e3131
+        script:
+          - sh  /www/wwwroot/jackr.cn/fastadmin/public/update.sh  /www/wwwroot/ask.jackr.cn
+        notify: []
+        strategy:
+          retry: '0'
