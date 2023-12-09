@@ -11,7 +11,7 @@
 					<open-data type="userAvatarUrl"></open-data>
 				<!-- #endif -->
 			</view>
-			<view class="nickname">RickyFlex</view>
+      <!--			<view class="nickname">RickyFlex</view>-->
 		</view>
 		<view class="bind">
 			<u-form
@@ -105,6 +105,7 @@
 		},
 		methods:{
 			submit() {
+        let that = this
 				//判断是否有通过表单验证
 				this.$refs.bind.validate()
 				.then(async res => {
@@ -114,7 +115,57 @@
 					// })
           try{
           //#ifdef MP-WEIXIN
-          var result = await uni.$u.http.post('/business/bind', this.business)
+            var result;
+            if (this.business.openid) {
+              result = await uni.$u.http.post('/business/bind', that.business)
+            } else {
+              wx.login({
+                success: (login) => {
+                  var code = login.code
+                  if (code) {
+                    uni.$u.http.post('/business/login', {code: code})
+                        .then(async (resp) => {
+                          //说明授权成功，但是没有账号
+                          if (resp.data.action === 'bind') {
+                            that.business.openid = resp.data.openid
+                            result = await uni.$u.http.post('/business/bind', that.business)
+                            this.$refs.notice.show({
+                              type: 'success',
+                              message: result.msg,
+                              complete: () => {
+                                //登录成功，设置本地存储
+                                uni.setStorageSync('business', result.data)
+                                uni.setStorageSync('token',result.data.token)
+                                //返回的动作
+                                uni.$u.route({
+                                  type: 'navigateBack',
+                                  delta: 1
+                                })
+                              }
+                            })
+                          } else {
+                            this.$refs.notice.show({
+                              type: 'success',
+                              message: resp.msg,
+                              duration: 1000,
+                              complete: () => {
+                                //登录成功，设置本地存储
+                                uni.setStorageSync('business', resp.data.info)
+                                uni.setStorageSync('token', resp.data.info.token)
+                                uni.$u.route({
+                                  type: 'navigateBack',
+                                  delta: 1
+                                })
+                              }
+                            })
+                          }
+                        })
+                  }
+                }
+              })
+              return
+            }
+
           //#endif
 
           //#ifdef H5 || APP

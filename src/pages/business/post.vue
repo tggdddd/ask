@@ -459,7 +459,7 @@ export default {
   white-space: nowrap;
   text-overflow: ellipsis;
   color: #000;
-  text-decoration: underline;
+  text-decoration: none !important;
   font-weight: bold;
 }
 

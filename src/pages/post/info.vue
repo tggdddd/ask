@@ -34,8 +34,8 @@
         <!-- 发布时间 -->
         <view class="createtime">发布于 {{ post.createtime_text }}</view>
 
-        <view class="follow">
-          <u-tag class="item" :text="post.followee===true?'已关注':'关注'" type="success" plain @click="flowee" size="mini"></u-tag>
+        <view class="follow" style="word-break: keep-all;">
+          <u-tag class="item" style="word-break: keep-all;" :text="post.followee===true?'已关注':'关注'" type="success" plain @click="flowee" size="mini"></u-tag>
         </view>
       </view>
 
@@ -75,7 +75,7 @@
     </view>
 
     <!-- 评论列表 -->
-    <comment ref="comment" v-if="refresh" :postid="postid" :pid="0" :show="true"/>
+    <comment ref="comment" v-if="postid" :postid="postid" :pid="0" :show="true"/>
 
     <!-- 回答弹出层 -->
     <u-popup :show="AnswerShow" @close="AnswerShow = false">
@@ -104,16 +104,24 @@
 
 <script>
 import comment from "@/components/comment/index.vue";
+import UGrid from "@/uni_modules/uview-ui/components/u-grid/u-grid.vue";
+import UGridItem from "@/uni_modules/uview-ui/components/u-grid-item/u-grid-item.vue";
+import UTag from "@/uni_modules/uview-ui/components/u-tag/u-tag.vue";
+import UButton from "@/uni_modules/uview-ui/components/u-button/u-button.vue";
+import UDivider from "@/uni_modules/uview-ui/components/u-divider/u-divider.vue";
+import UPopup from "@/uni_modules/uview-ui/components/u-popup/u-popup.vue";
+import UForm from "@/uni_modules/uview-ui/components/u-form/u-form.vue";
+import UFormItem from "@/uni_modules/uview-ui/components/u-form-item/u-form-item.vue";
+import UToast from "@/uni_modules/uview-ui/components/u-toast/u-toast.vue";
 
 export default {
-  components:{ comment },
+  components:{UToast, UFormItem, UForm, UPopup, UDivider, UButton, UTag, UGridItem, UGrid, comment },
   onLoad(options) {
-    var postid = options.postid ? options.postid : 0;
-    this.postid = postid
-    this.business = uni.getStorageSync('business') ? uni.getStorageSync('business') : {}
+    this.$set(this, "postid", options.postid || 0);
+    this.business = uni.getStorageSync('business') || {}
     //调用请求数据
-    this.PostData()
-    this.CommentData()
+    this.PostData(options.postid)
+    // this.CommentData(options.postid)
   },
   data() {
     return {
@@ -123,7 +131,6 @@ export default {
         business: {},
         followee: false
       },
-      refresh: true,
       comlist: [],
       business: {},
       MenuShow: false,
@@ -146,8 +153,7 @@ export default {
     }
   },
   methods: {
-    ToBus(busid)
-    {
+    ToBus(busid) {
       uni.$u.route({
         type: 'navigateTo',
         url: '/pages/business/center',
@@ -156,21 +162,19 @@ export default {
         }
       })
     },
-    AnswerToggle()
-    {
+    AnswerToggle() {
       this.AnswerShow = true
       this.comment.pid = 0
     },
-    async PostData() {
+    PostData() {
       //组装数据
-      var data = {
+      let data = {
         postid: this.postid,
       }
       if (this.business.id) {
         data.busid = this.business.id
       }
-      uni.$u.http.post('/post/info', data)
-          .then(result => {
+      uni.$u.http.post('/post/info', data).then(result => {
             this.post = result.data
             this.$set(this.post,"followee",result.data.followee)
           }).catch(err => {
@@ -201,16 +205,25 @@ export default {
       })
       this.post.collect = !this.post.collect
     },
-    async CommentData() {
+    CommentData() {
       //组装数据
-      var data = {postid: this.postid}
+      let data = {postid:  this.postid}
       if (this.business.id) {
         data.busid = this.business.id
       }
-      var result = await uni.$u.http.post('/comment/index', data)
-      this.comlist = result.data
+      uni.$u.http.post('/comment/index', data).then(result=>{
+        this.comlist = result.data
+      })
     },
     async flowee(){
+      //未登录
+      if (!this.business || !this.business.id) {
+        this.$refs.notice.show({
+          type: 'error',
+          message: '请先登录'
+        })
+        return false
+      }
       const result  = await uni.$u.http.post('/post/flowee',{
         busid: this.post.busid
       })

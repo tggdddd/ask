@@ -10,16 +10,14 @@
     <scroll-view class="list" scroll-y="true" refresher-enabled="true" :refresher-triggered="triggered"
                  @refresherrefresh="refresh" @scrolltolower="loadmore">
       <view class="item" v-for="post in postlist">
-        <view class="business">
+        <view class="business" @click="ToBus(post.business.id)">
           <view class="avatar">
             <image mode="aspectFit" v-if="post.business.avatar_text" :src="post.business.avatar_text"></image>
             <image mode="aspectFit" v-else src="/static/avatar.png"></image>
           </view>
           <view class="author">{{post.business.nickname}}</view>
         </view>
-
-        <view class="info">
-          <navigator :url="`/pages/post/info?postid=${post.id}`" hover-class="none">
+        <view class="info" @click="postDetail(post.id)">
           <view class="title">{{post.title}}</view>
           <view class="createtime">发布时间：{{post.createtime_text}}</view>
           <view class="category">分类：{{post.cate.name}}</view>
@@ -28,7 +26,6 @@
             <view class="point">￥{{post.point}}</view>
             <view class="count">{{post.comment_text}}人参与回复</view>
           </view>
-          </navigator>
         </view>
       </view>
 
@@ -61,6 +58,25 @@ export default {
     }
   },
   methods: {
+    ToBus(busid) {
+      uni.$u.route({
+        type: 'navigateTo',
+        url: '/pages/business/center',
+        params:{
+          id:busid
+        }
+      })
+    },
+    postDetail(id) {
+      // /pages/post/info?postid='+post.id
+      uni.$u.route({
+        type: 'navigateTo',
+        url: '/pages/post/info',
+        params:{
+          postid: id
+        }
+      })
+    },
     search()
     {
       this.refresh()
@@ -68,7 +84,6 @@ export default {
     //上拉加载
     onReachBottom() {
       if (this.finished) return;
-
       this.page++
       this.PostData()
     },
@@ -243,7 +258,7 @@ export default {
   white-space: nowrap;
   text-overflow: ellipsis;
   color: #000;
-  //text-decoration: underline;
+  text-decoration: none !important;
   font-weight: bold;
 }
 

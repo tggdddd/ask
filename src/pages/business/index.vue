@@ -11,6 +11,8 @@
         <!-- #ifdef MP-WEIXIN -->
         <image v-if="business.avatar_text" :src="business.avatar_text"></image>
         <open-data v-else type="userAvatarUrl"></open-data>
+        <image v-if="business.id==null" src="/static/logo.png"></image>
+
         <!-- #endif -->
       </view>
       <!-- #ifdef MP-WEIXIN -->
@@ -85,23 +87,24 @@ export default {
         this.$refs.notice.show({
           message: result.msg,
           type: 'success',
+          duration: 1000,
           complete: () => {
             this.business.openid = null
             uni.setStorageSync('business', this.business)
           }
         })
       }).finally(()=>{
-        this.unlink = false
+        this.unLinkShow = false
       })
     },
     //微信授权登录
     login() {
-      uni.login({
-        provider: 'weixin',
-        success: async (login) => {
+      wx.login({
+        success: (login) => {
           var code = login.code
           if (code) {
-            var result = await uni.$u.http.post('/business/login', {code: code})
+            uni.$u.http.post('/business/login', {code: code})
+                .then(result => {
             //说明授权成功，但是没有账号
             if (result.data.action === 'bind') {
               this.$refs.notice.show({
@@ -131,6 +134,7 @@ export default {
                 }
               })
             }
+                })
           }
         }
       })

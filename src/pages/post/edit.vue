@@ -31,7 +31,7 @@
             ref="cate"
             @click="CateShow = true;"
         >
-          <u-input :value="post.cate" placeholder="请选择提问分类">
+          <u-input :value="post.cate" readonly placeholder="请选择提问分类">
             <template #suffix>
               <u-icon name="arrow-right"></u-icon>
             </template>

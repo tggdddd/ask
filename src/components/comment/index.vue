@@ -2,16 +2,17 @@
 // 引入自定义组件
 import Vue from 'vue'
 import UviewUi from "@/uni_modules/uview-ui/components/uview-ui/uview-ui.vue";
+import Comment from '@/components/comment/index.vue'
 
 export default {
   components: {
     UviewUi,
-    comment: () => import('@/components/comment/index.vue')
+    Comment
   },
   props: {
     show: {
       type: Boolean,
-      default: false
+      default: true
     },
     postid: {
       type: [String, Number],
@@ -25,7 +26,6 @@ export default {
     }
   },
   created() {
-    console.log("comment create")
     this.business = uni.getStorageSync('business') ? uni.getStorageSync('business') : {}
     this.CommentData()
     this.PostData()
@@ -48,7 +48,6 @@ export default {
         busid: 0,
         index: 0,
       },
-      refresh: true,
       post: {},
       comment: {
         content: '',
@@ -104,7 +103,9 @@ export default {
       this.AnswerShow = true
     },
     async CommentToggle(index) {
-      this.comlist[index].show = !this.comlist[index].show
+      const list = this.comlist
+      list[index].show = !list[index].show
+      this.$set(this, "comlist", list)
     },
     //帖子详情
     async PostData() {
@@ -137,13 +138,11 @@ export default {
       }
       uni.$u.http.post('/comment/index', data)
           .then(result => {
-            this.comlist = result.data
-            this.comlist.map((item) => {
-              //item == js 对象 show js对象下属性 修改js对象
-              //设置响应式数据 到 对象中
-              Vue.set(item, 'show', false)
-              Vue.set(item, 'comment_count', item.comment_count)
+            const list = result.data
+            list.map((item) => {
+              item.show = false
             })
+            Vue.set(this, 'comlist', list)
           })
     },
     //点赞和取消点赞
@@ -198,16 +197,11 @@ export default {
                   })
                   this.comment.content = ''
                   //隐藏掉评论列表
-                  this.refresh = false
-                  this.$nextTick(() => {
-                    this.refresh = true
-                    this.comlist[this.current.index].show = true
-                    this.comlist[this.current.index].comment_count++
-                  })
+                  this.comlist[this.current.index].show = true
+                  this.comlist[this.current.index].comment_count++
                 }).catch()
 
             //调用另一个组件中的方法
-            // comment.methods.CommentData()
           })
           .catch(error => {
             console.log(error)
@@ -304,8 +298,7 @@ export default {
         </view>
       </view>
 
-      <comment v-if="refresh && comment.comment_count > 0 && comment.show" :postid="postid" :show="comment.show"
-               :pid="comment.id"/>
+      <Comment :postid="postid" :pid="comment.id" :show="true" v-if="comment.comment_count>0 && comment.show"/>
     </view>
     <!-- 弹出层 -->
     <u-popup :show="MenuShow" @close="MenuShow = false">
@@ -330,7 +323,6 @@ export default {
         <u-button class="btn" type="error" text="取消" @click="MenuShow = false"></u-button>
       </view>
     </u-popup>
-
     <!-- 回答弹出层 -->
     <u-popup :show="AnswerShow" @close="AnswerShow = false">
       <view class="answer">
@@ -358,7 +350,6 @@ export default {
     <u-modal :show="PostShow" :title="'删除提醒'" :content="'是否确认删除评论'" showCancelButton
              :closeOnClickOverlay="true" @cancel="PostShow = false; MenuShow = false"
              @close="PostShow = false; MenuShow = false" @confirm="PostDel"></u-modal>
-
     <!-- 提醒组件 -->
     <u-toast ref="notice"></u-toast>
   </view>

@@ -52,7 +52,7 @@
             "sdkConfigs" : {
                 "oauth" : {
                     "weixin" : {
-                        "appid" : "wx6339984661ad7091",
+                        "appid" : "wx2a5402b6b0cad6af",
                         "UniversalLinks" : ""
                     }
                 }
@@ -64,7 +64,7 @@
     /* 快应用特有相关 */
     "mp-weixin" : {
         /* 微信小程序特有相关 */
-        "appid" : "wx6339984661ad7091",
+        "appid" : "wx2a5402b6b0cad6af",
         "setting" : {
             "urlCheck" : false,
             "es6" : true,
