@@ -2,10 +2,11 @@
 // 引入自定义组件
 import Vue from 'vue'
 import UviewUi from "@/uni_modules/uview-ui/components/uview-ui/uview-ui.vue";
-import comments from '@/components/comment/index.vue'
+import Comments from '@/components/comment/index.vue'
 
 export default {
-  components:{UviewUi, comments },
+  name:"Comments",
+  components:{UviewUi, Comments },
   props: {
     show: {
       type: Boolean,
@@ -295,7 +296,7 @@ export default {
         </view>
       </view>
 
-      <comments :postid="postid" :pid="comment.id" :show="true" v-if="comment.comment_count>0 && comment.show"/>
+      <Comments :postid="postid" :pid="comment.id" :show="true" v-if="comment.comment_count>0 && comment.show"/>
     </view>
     <!-- 弹出层 -->
     <u-popup :show="MenuShow" @close="MenuShow = false">

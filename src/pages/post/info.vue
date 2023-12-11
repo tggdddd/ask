@@ -75,7 +75,7 @@
     </view>
 
     <!-- 评论列表 -->
-    <comment ref="comment" v-if="postid" :postid="postid" :pid="0" :show="true"/>
+    <Comments ref="comment" v-if="postid" :postid="postid" :pid="0" :show="true"/>
 
     <!-- 回答弹出层 -->
     <u-popup :show="AnswerShow" @close="AnswerShow = false">
@@ -103,7 +103,6 @@
 </template>
 
 <script>
-import comment from "@/components/comment/index.vue";
 import UGrid from "@/uni_modules/uview-ui/components/u-grid/u-grid.vue";
 import UGridItem from "@/uni_modules/uview-ui/components/u-grid-item/u-grid-item.vue";
 import UTag from "@/uni_modules/uview-ui/components/u-tag/u-tag.vue";
@@ -113,9 +112,9 @@ import UPopup from "@/uni_modules/uview-ui/components/u-popup/u-popup.vue";
 import UForm from "@/uni_modules/uview-ui/components/u-form/u-form.vue";
 import UFormItem from "@/uni_modules/uview-ui/components/u-form-item/u-form-item.vue";
 import UToast from "@/uni_modules/uview-ui/components/u-toast/u-toast.vue";
-
+import Comments from '@/components/comment/index.vue'
 export default {
-  components:{UToast, UFormItem, UForm, UPopup, UDivider, UButton, UTag, UGridItem, UGrid, comment },
+  components:{UToast, UFormItem, UForm, UPopup, UDivider, UButton, UTag, UGridItem, UGrid, Comments },
   onLoad(options) {
     this.$set(this, "postid", options.postid || 0);
     this.business = uni.getStorageSync('business') || {}
