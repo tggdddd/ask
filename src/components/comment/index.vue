@@ -227,7 +227,7 @@ export default {
         postid: this.postid,
         busid: this.business.id
       }
-      var result = await uni.$u.http.post('/comment/del', data)
+      var result = await uni.$u.http.post('/business/comment_del', data)
       this.$refs.notice.show({
         type: 'success',
         message: result.msg

@@ -92,7 +92,7 @@ export default {
                         //返回的动作
                         uni.$u.route({
                           type: 'navigateBack',
-                          delta: 200
+                          delta: 1
                         })
                       }
                     })
