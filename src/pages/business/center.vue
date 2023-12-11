@@ -368,6 +368,7 @@ export default {
           }
       ).then(res => {
         this.info.collection.list.splice(this.info.collection.list.findIndex(e=>e.id === this.tempDeleteId),1)
+        this.info.collection.count -= 1;
         this.$refs.notice.show({
           type: 'success',
           message: res.msg,
@@ -386,6 +387,7 @@ export default {
           }
       ).then(res => {
         this.info.ask.list.splice(this.info.ask.list.findIndex(e=>e.id === this.tempDeleteId),1)
+        this.info.ask.count -= 1;
         this.$refs.notice.show({
           type: 'success',
           message: res.msg,
@@ -404,6 +406,7 @@ export default {
           }
       ).then(res => {
         this.info.answer.list.splice(this.info.answer.list.findIndex(e=>e.id === this.tempDeleteId),1)
+        this.info.answer.count -= 1;
         this.$refs.notice.show({
           type: 'success',
           message: res.msg,
