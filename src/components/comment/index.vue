@@ -141,7 +141,9 @@ export default {
               item.show = false
             })
             Vue.set(this, 'comlist', list)
-          })
+          }).catch(err=>{
+            Vue.set(this, "commlist",[])
+      })
     },
     //点赞和取消点赞
     async like(comid) {
@@ -234,7 +236,6 @@ export default {
       })
       this.PostData()
       this.CommentData()
-
     }
   }
 }
